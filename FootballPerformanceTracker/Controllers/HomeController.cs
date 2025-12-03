@@ -1,22 +1,27 @@
 using System.Diagnostics;
 using FootballPerformanceTracker.Models;
+using FootballTrackerData.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FootballPerformanceTracker.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        
+        private readonly FootballDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(FootballDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var teams = _context.Team.ToList();
+            return View(teams);
         }
+
+        
 
         public IActionResult Privacy()
         {

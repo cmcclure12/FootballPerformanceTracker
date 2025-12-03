@@ -1,4 +1,7 @@
 
+using FootballTrackerData.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace FootballTrackerAPI
 {
     public class Program
@@ -13,6 +16,8 @@ namespace FootballTrackerAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddDbContext<FootballDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("FootballConnection")));
 
             var app = builder.Build();
 

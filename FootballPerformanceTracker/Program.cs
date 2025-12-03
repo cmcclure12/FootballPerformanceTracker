@@ -1,3 +1,6 @@
+using FootballTrackerData.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace FootballPerformanceTracker
 {
     public class Program
@@ -8,6 +11,10 @@ namespace FootballPerformanceTracker
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<FootballDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("FootballConnection")));
+
 
             var app = builder.Build();
 

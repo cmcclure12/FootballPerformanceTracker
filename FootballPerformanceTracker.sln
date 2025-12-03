@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36717.8 d17.14
+VisualStudioVersion = 17.14.36717.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FootballPerformanceTracker", "FootballPerformanceTracker\FootballPerformanceTracker.csproj", "{2241F06C-EC2B-4E39-A538-8D7D9E3E2114}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BDF21B22-E2D8-4FBC-B3B2-E062A9A6E7A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FootballTrackerData", "FootballTrackerData\FootballTrackerData.csproj", "{96AB2DC4-A726-41A5-A034-973EA5F1EEDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +27,10 @@ Global
 		{2654ABE7-5C5D-48C3-BF48-1EABE75E1E6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2654ABE7-5C5D-48C3-BF48-1EABE75E1E6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2654ABE7-5C5D-48C3-BF48-1EABE75E1E6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96AB2DC4-A726-41A5-A034-973EA5F1EEDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96AB2DC4-A726-41A5-A034-973EA5F1EEDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96AB2DC4-A726-41A5-A034-973EA5F1EEDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96AB2DC4-A726-41A5-A034-973EA5F1EEDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
