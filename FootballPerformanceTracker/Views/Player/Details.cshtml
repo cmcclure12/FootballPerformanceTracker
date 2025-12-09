@@ -1,1 +1,265 @@
-﻿
+﻿@model FootballTrackerData.Models.Player
+
+@{
+    ViewData["Title"] = "Player Performance";
+}
+
+<div class="page-header fade-in">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-person-badge me-2"></i>@Model.Name</h1>
+            <p>Detailed performance analytics and match history</p>
+        </div>
+        <a asp-controller="Player" asp-action="Index" class="btn btn-secondary" data-testid="back-to-players-btn">
+            <i class="bi bi-arrow-left me-2"></i>Back to Players
+        </a>
+    </div>
+</div>
+
+<!-- Player Info Card -->
+<div class="row g-4 mb-4">
+    <div class="col-md-12">
+        <div class="card fade-in">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 text-center">
+                        <div class="player-avatar" style="width: 120px; height: 120px; background: var(--bg-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 3px solid var(--accent-blue);">
+                            <i class="bi bi-person" style="font-size: 4rem; color: var(--accent-blue);"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="text-muted mb-1">Position</p>
+                                <h5><span class="badge badge-info" data-testid="player-position">@Model.Position</span></h5>
+                            </div>
+                            <div class="col-md-3">
+                                <p class="text-muted mb-1">Age</p>
+                                <h5 data-testid="player-age">@Model.Age years</h5>
+                            </div>
+                            <div class="col-md-3">
+                                <p class="text-muted mb-1">Status</p>
+                                <h5>
+                                    @if (Model.IsInjured)
+                                    {
+                                        <span class="badge badge-danger" data-testid="player-status">Injured</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-success" data-testid="player-status">Available</span>
+                                    }
+                                </h5>
+                            </div>
+                            <div class="col-md-3">
+                                <p class="text-muted mb-1">Team</p>
+                                <h5 data-testid="player-team">@Model.Team?.TeamName</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-calendar-event"></i></div>
+            <div class="stat-value" data-testid="total-appearances">13</div>
+            <div class="stat-label">Total Appearances</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-star"></i></div>
+            <div class="stat-value" data-testid="avg-rating">7.3</div>
+            <div class="stat-label">Average Rating</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-trophy"></i></div>
+            <div class="stat-value text-success" data-testid="goals">2</div>
+            <div class="stat-label">Goals</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-hand-thumbs-up"></i></div>
+            <div class="stat-value text-accent" data-testid="assists">4</div>
+            <div class="stat-label">Assists</div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Trend Chart -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card fade-in">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Performance Trend</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="playerPerformanceChart" data-testid="performance-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Matches -->
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card fade-in">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Recent Match Performances</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Opponent</th>
+                                <th>Rating</th>
+                                <th>Goals</th>
+                                <th>Assists</th>
+                                <th>Minutes</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody data-testid="matches-table">
+                            <!-- Sample data - will be populated from backend -->
+                            <tr>
+                                <td>Mar 8, 2025</td>
+                                <td>vs Lions United</td>
+                                <td><span class="badge badge-success">8.5</span></td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>90</td>
+                                <td><span class="badge badge-info">Man of Match</span></td>
+                            </tr>
+                            <tr>
+                                <td>Mar 1, 2025</td>
+                                <td>vs Eagles FC</td>
+                                <td><span class="badge badge-warning">7.0</span></td>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>90</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Feb 22, 2025</td>
+                                <td>vs Hawks United</td>
+                                <td><span class="badge badge-success">8.0</span></td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>85</td>
+                                <td><span class="badge badge-success">Excellent</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Best Performance Highlight -->
+<div class="row g-4 mt-4">
+    <div class="col-12">
+        <div class="card fade-in" style="border: 2px solid var(--accent-green);">
+            <div class="card-header" style="background: linear-gradient(135deg, var(--accent-green), #00cc70);">
+                <h5 class="mb-0" style="color: #1a1d29;">
+                    <i class="bi bi-trophy-fill me-2"></i>Best Performance
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Match</p>
+                        <h5 data-testid="best-match">vs Lions United</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Rating</p>
+                        <h5><span class="badge badge-success" data-testid="best-rating">8.5</span></h5>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Goals</p>
+                        <h5 data-testid="best-goals">1</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Assists</p>
+                        <h5 data-testid="best-assists">2</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Player Performance Chart
+        const ctx = document.getElementById('playerPerformanceChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Match 1', 'Match 2', 'Match 3', 'Match 4', 'Match 5', 'Match 6', 'Match 7', 'Match 8'],
+                    datasets: [{
+                        label: 'Match Rating',
+                        data: [7.0, 7.5, 6.8, 8.0, 7.2, 8.5, 7.0, 7.8],
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 8,
+                        pointBackgroundColor: '#00d4ff',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#b8bcc8',
+                                font: { size: 14 }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 0,
+                            max: 10,
+                            ticks: {
+                                color: '#b8bcc8',
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#b8bcc8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}

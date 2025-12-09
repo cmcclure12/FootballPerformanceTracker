@@ -1,1 +1,220 @@
-﻿
+﻿@model FootballTrackerData.Models.Match
+
+@{
+    ViewData["Title"] = "Enter Player Ratings";
+    var players = ViewBag.Players as IEnumerable<FootballTrackerData.Models.Player>;
+}
+
+<div class="page-header fade-in">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-star me-2"></i>Enter Player Ratings</h1>
+            <p>Rate individual player performances for this match</p>
+        </div>
+        <a asp-controller="Match" asp-action="Details" asp-route-id="@Model.MatchId" class="btn btn-secondary" data-testid="back-to-match-btn">
+            <i class="bi bi-arrow-left me-2"></i>Back to Match
+        </a>
+    </div>
+</div>
+
+<!-- Match Info -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card fade-in">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Match Date</p>
+                        <h5 data-testid="match-date">@Model.Date.ToString("MMM dd, yyyy")</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Opponent</p>
+                        <h5 data-testid="match-opponent">@Model.Opponent</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Location</p>
+                        <h5>
+                            @if (Model.isHomeMatch)
+                            {
+                                <span class="badge badge-info" data-testid="match-location">Home</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning" data-testid="match-location">Away</span>
+                            }
+                        </h5>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Team</p>
+                        <h5 data-testid="team-name">@Model.Team?.TeamName</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rating Form -->
+<div class="card fade-in" style="animation-delay: 0.1s;">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-clipboard-data me-2"></i>Player Performance Ratings</h5>
+    </div>
+    <div class="card-body">
+        <form asp-controller="PlayerPerformances" asp-action="SaveRatings" method="post" id="ratingsForm">
+            <input type="hidden" name="matchId" value="@Model.MatchId" />
+
+            @if (players != null && players.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">Player</th>
+                                <th style="width: 10%;">Position</th>
+                                <th style="width: 20%;">Rating (1-10)</th>
+                                <th style="width: 10%;">Goals</th>
+                                <th style="width: 10%;">Assists</th>
+                                <th style="width: 10%;">Minutes</th>
+                                <th style="width: 20%;">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < players.Count(); i++)
+                            {
+                                var player = players.ElementAt(i);
+                                <tr>
+                                    <td>
+                                        <strong>@player.Name</strong>
+                                        <input type="hidden" name="performances[@i].PlayerId" value="@player.PlayerId" />
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info">@player.Position</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <input type="range" class="form-range rating-slider"
+                                                   name="performances[@i].PlayersRating"
+                                                   min="1" max="10" value="7"
+                                                   data-rating-display="rating-display-@i"
+                                                   data-testid="rating-slider-@player.PlayerId">
+                                            <span class="rating-value" id="rating-display-@i" data-testid="rating-value-@player.PlayerId">7</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control"
+                                               name="performances[@i].Goals"
+                                               min="0" value="0"
+                                               data-testid="goals-input-@player.PlayerId">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control"
+                                               name="performances[@i].Assists"
+                                               min="0" value="0"
+                                               data-testid="assists-input-@player.PlayerId">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control"
+                                               name="performances[@i].MinutesPlayed"
+                                               min="0" max="120" value="90"
+                                               data-testid="minutes-input-@player.PlayerId">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control"
+                                               name="performances[@i].InjuryNotes"
+                                               placeholder="Optional notes"
+                                               data-testid="notes-input-@player.PlayerId">
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-between align-items-center">
+                    <div class="text-muted">
+                        <i class="bi bi-info-circle me-2"></i>
+                        All ratings are optional. Save to record performance data.
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-secondary" onclick="history.back()" data-testid="cancel-btn">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-success" data-testid="save-ratings-btn">
+                            <i class="bi bi-check-circle me-2"></i>Save All Ratings
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: var(--text-muted);"></i>
+                    <p class="mt-3 text-muted">No players available for this team. Add players first to enter ratings.</p>
+                    <a asp-controller="Player" asp-action="Index" asp-route-teamId="@Model.TeamId" class="btn btn-primary mt-3" data-testid="add-players-btn">
+                        <i class="bi bi-plus-circle me-2"></i>Add Players
+                    </a>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+<!-- Quick Tips -->
+<div class="row g-4 mt-4">
+    <div class="col-md-4">
+        <div class="card" style="border-color: var(--accent-blue);">
+            <div class="card-body text-center">
+                <i class="bi bi-lightbulb" style="font-size: 2rem; color: var(--accent-yellow);"></i>
+                <h6 class="mt-3" style="color: var(--accent-blue);">Rating Guide</h6>
+                <p class="text-muted small mb-0">
+                    1-4: Poor | 5-6: Average | 7-8: Good | 9-10: Excellent
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card" style="border-color: var(--accent-green);">
+            <div class="card-body text-center">
+                <i class="bi bi-trophy" style="font-size: 2rem; color: var(--accent-green);"></i>
+                <h6 class="mt-3" style="color: var(--accent-green);">Track Progress</h6>
+                <p class="text-muted small mb-0">
+                    Consistent ratings help identify player development trends
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card" style="border-color: var(--accent-red);">
+            <div class="card-body text-center">
+                <i class="bi bi-clipboard-check" style="font-size: 2rem; color: var(--accent-red);"></i>
+                <h6 class="mt-3" style="color: var(--accent-red);">Be Objective</h6>
+                <p class="text-muted small mb-0">
+                    Rate based on performance, not just results
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Rating slider real-time update
+        document.querySelectorAll('.rating-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const displayId = this.getAttribute('data-rating-display');
+                const displayElement = document.getElementById(displayId);
+                if (displayElement) {
+                    displayElement.textContent = this.value;
+                }
+            });
+        });
+
+        // Form validation
+        document.getElementById('ratingsForm')?.addEventListener('submit', function(e) {
+            const confirmed = confirm('Are you sure you want to save these ratings? This will record the performance data for all players.');
+            if (!confirmed) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}

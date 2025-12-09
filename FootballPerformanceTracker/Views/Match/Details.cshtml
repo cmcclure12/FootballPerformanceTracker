@@ -1,1 +1,214 @@
-﻿
+﻿@model FootballTrackerData.Models.Match
+
+@{
+    ViewData["Title"] = "Match Details";
+}
+
+<div class="page-header fade-in">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-clipboard-data me-2"></i>Match Details</h1>
+            <p>View match information and enter performance data</p>
+        </div>
+        <a asp-controller="Match" asp-action="Index" class="btn btn-secondary" data-testid="back-to-matches-btn">
+            <i class="bi bi-arrow-left me-2"></i>Back to Matches
+        </a>
+    </div>
+</div>
+
+<!-- Match Info Card -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card fade-in">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Match Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Date</p>
+                        <h5 data-testid="match-date">@Model.Date.ToString("MMMM dd, yyyy")</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Opponent</p>
+                        <h5 data-testid="match-opponent">@Model.Opponent</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Location</p>
+                        <h5>
+                            @if (Model.isHomeMatch)
+                            {
+                                <span class="badge badge-info" data-testid="match-location">Home</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning" data-testid="match-location">Away</span>
+                            }
+                        </h5>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="text-muted mb-1">Team</p>
+                        <h5 data-testid="match-team">@Model.Team?.TeamName</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Score Input Card -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card fade-in" style="animation-delay: 0.1s;">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-calculator me-2"></i>Match Score</h5>
+            </div>
+            <div class="card-body">
+                <form asp-controller="Match" asp-action="UpdateScore" asp-route-id="@Model.MatchId" method="post">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label for="teamGoals" class="form-label">@Model.Team?.TeamName Goals</label>
+                            <input type="number" class="form-control form-control-lg" id="teamGoals" name="teamGoals"
+                                   value="@Model.TeamGoals" min="0" required data-testid="team-goals-input">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="opponentGoals" class="form-label">@Model.Opponent Goals</label>
+                            <input type="number" class="form-control form-control-lg" id="opponentGoals" name="opponentGoals"
+                                   value="@Model.OpponentGoals" min="0" required data-testid="opponent-goals-input">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-success w-100" data-testid="save-score-btn">
+                                <i class="bi bi-check-circle me-2"></i>Save Score
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                @if (Model.TeamGoals.HasValue && Model.OpponentGoals.HasValue)
+                {
+                    <div class="mt-4 text-center">
+                        <div class="alert" style="background: var(--bg-secondary); border: 2px solid var(--accent-blue);" data-testid="match-result">
+                            @{
+                                var result = Model.TeamGoals.Value > Model.OpponentGoals.Value ? "Victory!" :
+                                Model.TeamGoals.Value < Model.OpponentGoals.Value ? "Defeat" : "Draw";
+                                var resultColor = result == "Victory!" ? "var(--accent-green)" :
+                                result == "Defeat" ? "var(--accent-red)" : "var(--accent-yellow)";
+                            }
+                            <h3 style="color: @resultColor; margin: 0;">
+                                @result - @Model.TeamGoals : @Model.OpponentGoals
+                            </h3>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Player Ratings Section -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card fade-in" style="animation-delay: 0.2s;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-star me-2"></i>Player Performance Ratings</h5>
+                <a asp-controller="PlayerPerformances" asp-action="EnterForMatch" asp-route-matchId="@Model.MatchId"
+                   class="btn btn-sm btn-primary" data-testid="enter-ratings-btn">
+                    <i class="bi bi-pencil me-2"></i>Enter Ratings
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Position</th>
+                                <th>Rating</th>
+                                <th>Goals</th>
+                                <th>Assists</th>
+                                <th>Minutes</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody data-testid="player-ratings-table">
+                            @if (Model.PlayerPerformances != null && Model.PlayerPerformances.Any())
+                            {
+                                @foreach (var performance in Model.PlayerPerformances)
+                                {
+                                    <tr>
+                                        <td><strong>@performance.Player?.Name</strong></td>
+                                        <td><span class="badge badge-info">@performance.Player?.Position</span></td>
+                                        <td>
+                                            <span class="badge badge-success" data-testid="player-rating-@performance.PlayerId">
+                                                @performance.PlayersRating / 10
+                                            </span>
+                                        </td>
+                                        <td data-testid="player-goals-@performance.PlayerId">@performance.Goals</td>
+                                        <td data-testid="player-assists-@performance.PlayerId">@performance.Assists</td>
+                                        <td data-testid="player-minutes-@performance.PlayerId">@performance.MinutesPlayed</td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(performance.InjuryNotes))
+                                            {
+                                                <span class="badge badge-danger">@performance.InjuryNotes</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center py-5">
+                                        <div class="text-muted">
+                                            <i class="bi bi-clipboard-x" style="font-size: 3rem;"></i>
+                                            <p class="mt-3">No player ratings entered yet. Click "Enter Ratings" to add performance data.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Match Summary Stats -->
+@if (Model.PlayerPerformances != null && Model.PlayerPerformances.Any())
+{
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-people"></i></div>
+                <div class="stat-value" data-testid="players-used">@Model.PlayerPerformances.Count()</div>
+                <div class="stat-label">Players Used</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-star"></i></div>
+                <div class="stat-value" data-testid="avg-team-rating">@Model.PlayerPerformances.Average(p => p.PlayersRating).ToString("F1")</div>
+                <div class="stat-label">Avg Team Rating</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-trophy"></i></div>
+                <div class="stat-value text-success" data-testid="total-goals">@Model.PlayerPerformances.Sum(p => p.Goals)</div>
+                <div class="stat-label">Total Goals</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-hand-thumbs-up"></i></div>
+                <div class="stat-value text-accent" data-testid="total-assists">@Model.PlayerPerformances.Sum(p => p.Assists)</div>
+                <div class="stat-label">Total Assists</div>
+            </div>
+        </div>
+    </div>
+}

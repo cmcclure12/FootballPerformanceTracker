@@ -1,1 +1,261 @@
-﻿
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Team Dashboard";
+    var teamName = ViewBag.TeamName ?? "Team";
+    var teamId = ViewBag.TeamId ?? 0;
+}
+
+<div class="page-header fade-in">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-speedometer2 me-2"></i>@teamName Dashboard</h1>
+            <p>Overview of team performance and quick actions</p>
+        </div>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary" data-testid="back-to-teams-btn">
+            <i class="bi bi-arrow-left me-2"></i>Back to Teams
+        </a>
+    </div>
+</div>
+
+<!-- Quick Action Buttons -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-3 justify-content-center">
+                    <a asp-controller="Player" asp-action="Index" asp-route-teamId="@teamId" class="btn btn-primary" data-testid="players-btn">
+                        <i class="bi bi-people me-2"></i>Manage Players
+                    </a>
+                    <a asp-controller="Match" asp-action="Index" asp-route-teamId="@teamId" class="btn btn-primary" data-testid="matches-btn">
+                        <i class="bi bi-calendar-event me-2"></i>View Matches
+                    </a>
+                    <a asp-controller="Analytics" asp-action="Team" asp-route-teamId="@teamId" class="btn btn-primary" data-testid="analytics-btn">
+                        <i class="bi bi-bar-chart me-2"></i>Performance Analytics
+                    </a>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addMatchModal" data-testid="add-match-btn">
+                        <i class="bi bi-plus-circle me-2"></i>Add Match
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dashboard Cards -->
+<div class="row g-4 mb-4">
+    <!-- Next Match Card -->
+    <div class="col-md-4">
+        <div class="dashboard-card fade-in" style="animation-delay: 0.1s;">
+            <h5><i class="bi bi-calendar-check me-2"></i>Next Match</h5>
+            <div class="mt-3" data-testid="next-match-info">
+                <p><strong>Opponent:</strong> <span id="nextOpponent">Tigers FC</span></p>
+                <p><strong>Date:</strong> <span id="nextDate">March 15, 2025</span></p>
+                <p><strong>Location:</strong> <span id="nextLocation" class="badge badge-info">Home</span></p>
+            </div>
+            <div class="mt-3">
+                <a href="#" class="btn btn-sm btn-secondary w-100" data-testid="view-next-match-btn">
+                    <i class="bi bi-eye me-2"></i>View Details
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Result Card -->
+    <div class="col-md-4">
+        <div class="dashboard-card fade-in" style="animation-delay: 0.2s;">
+            <h5><i class="bi bi-trophy me-2"></i>Recent Result</h5>
+            <div class="mt-3" data-testid="recent-result-info">
+                <p><strong>vs Lions United</strong></p>
+                <div class="text-center my-3">
+                    <span class="badge badge-success" style="font-size: 1.5rem; padding: 1rem 2rem;">
+                        Won 3 - 1
+                    </span>
+                </div>
+                <p class="text-center text-muted">March 8, 2025</p>
+            </div>
+            <div class="mt-3">
+                <a href="#" class="btn btn-sm btn-secondary w-100" data-testid="view-recent-result-btn">
+                    <i class="bi bi-eye me-2"></i>View Match Report
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Availability Card -->
+    <div class="col-md-4">
+        <div class="dashboard-card fade-in" style="animation-delay: 0.3s;">
+            <h5><i class="bi bi-person-check me-2"></i>Player Availability</h5>
+            <div class="mt-3" data-testid="player-availability-info">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Available:</span>
+                    <span class="badge badge-success">18</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Injured:</span>
+                    <span class="badge badge-danger">2</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Suspended:</span>
+                    <span class="badge badge-warning">0</span>
+                </div>
+            </div>
+            <div class="mt-3">
+                <a asp-controller="Player" asp-action="Index" asp-route-teamId="@teamId" class="btn btn-sm btn-secondary w-100" data-testid="view-squad-btn">
+                    <i class="bi bi-eye me-2"></i>View Full Squad
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Summary -->
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card fade-in" style="animation-delay: 0.4s;">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Performance Summary - Last 5 Matches</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="bi bi-star"></i></div>
+                            <div class="stat-value" data-testid="avg-rating">7.4</div>
+                            <div class="stat-label">Avg Team Rating</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="bi bi-trophy"></i></div>
+                            <div class="stat-value text-success" data-testid="wins">4</div>
+                            <div class="stat-label">Wins</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="bi bi-dash-circle"></i></div>
+                            <div class="stat-value text-warning" data-testid="draws">1</div>
+                            <div class="stat-label">Draws</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
+                            <div class="stat-value text-danger" data-testid="losses">0</div>
+                            <div class="stat-label">Losses</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="chart-container">
+                        <canvas id="performanceTrendChart" data-testid="performance-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Match Modal -->
+<div class="modal fade" id="addMatchModal" tabindex="-1" aria-labelledby="addMatchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMatchModalLabel">
+                    <i class="bi bi-plus-circle me-2"></i>Add New Match
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Match" asp-action="Create" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="teamId" value="@teamId" />
+                    <div class="mb-3">
+                        <label for="opponent" class="form-label">Opponent</label>
+                        <input type="text" class="form-control" id="opponent" name="opponent" required data-testid="opponent-input">
+                    </div>
+                    <div class="mb-3">
+                        <label for="matchDate" class="form-label">Match Date</label>
+                        <input type="date" class="form-control" id="matchDate" name="date" required data-testid="date-input">
+                    </div>
+                    <div class="mb-3">
+                        <label for="isHomeMatch" class="form-label">Location</label>
+                        <select class="form-select" id="isHomeMatch" name="isHomeMatch" required data-testid="location-select">
+                            <option value="true">Home</option>
+                            <option value="false">Away</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success" data-testid="save-match-btn">
+                        <i class="bi bi-check-circle me-2"></i>Add Match
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Performance Trend Chart
+        const ctx = document.getElementById('performanceTrendChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Match 1', 'Match 2', 'Match 3', 'Match 4', 'Match 5'],
+                    datasets: [{
+                        label: 'Team Average Rating',
+                        data: [7.2, 7.5, 7.1, 7.8, 7.4],
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#00d4ff',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#b8bcc8',
+                                font: { size: 14 }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 0,
+                            max: 10,
+                            ticks: {
+                                color: '#b8bcc8',
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#b8bcc8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}
